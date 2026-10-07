@@ -1,0 +1,5 @@
+﻿- Tâche 1 : création de la base de données NoSQL
+- Tâche 2 : préparation des données fictives
+- Tâche 3 : développement du frontend
+- Tâche 4 : développement de l'API
+- Tâche 5 : tests et validation
