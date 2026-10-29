@@ -1,0 +1,39 @@
+[
+  {"eventId": "evt-001", "type": "ReservationEffectuee", "emitter": "hebergement-service", "receiver": "transport-service",
+   "reservationId": "res_1001", "version": 1, "occurredAt": "2026-11-02T09:00:00Z",
+   "data": {"guestId": "usr_demo_guest", "listingId": "lst_lyon_01", "city": "Lyon", "checkIn": "2026-12-10", "checkOut": "2026-12-14"}},
+
+  {"eventId": "evt-002", "type": "ReservationEffectuee", "emitter": "hebergement-service", "receiver": "transport-service",
+   "reservationId": "res_1002", "version": 1, "occurredAt": "2026-11-02T09:05:00Z",
+   "data": {"guestId": "usr_demo_guest2", "listingId": "lst_nantes_07", "city": "Nantes", "checkIn": "2026-12-20", "checkOut": "2026-12-23"}},
+
+  {"eventId": "evt-003", "type": "TaxiReserve", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1001", "version": 2, "occurredAt": "2026-11-02T09:10:00Z",
+   "data": {"taxiId": "taxi_42", "pickupAddress": "Gare Part-Dieu, Lyon", "pickupTime": "2026-12-10T15:30:00Z"}},
+
+  {"eventId": "evt-003", "type": "TaxiReserve", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1001", "version": 2, "occurredAt": "2026-11-02T09:10:00Z",
+   "data": {"taxiId": "taxi_42", "pickupAddress": "Gare Part-Dieu, Lyon", "pickupTime": "2026-12-10T15:30:00Z"}},
+
+  {"eventId": "evt-004", "type": "TaxiConfirme", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1001", "version": 3, "occurredAt": "2026-11-02T09:12:00Z",
+   "data": {"taxiId": "taxi_42"}},
+
+  {"eventId": "evt-005", "type": "TaxiReserve", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1002", "version": 2, "occurredAt": "2026-11-02T09:15:00Z",
+   "data": {"taxiId": "taxi_17", "pickupAddress": "Gare de Nantes", "pickupTime": "2026-12-20T14:00:00Z"}},
+
+  {"eventId": "evt-006", "type": "TaxiAnnule", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1002", "version": 3, "occurredAt": "2026-11-02T09:20:00Z",
+   "data": {"taxiId": "taxi_17", "reason": "voyageur indisponible"}},
+
+  {"eventId": "evt-007", "type": "TaxiReserve", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_1002", "version": 2, "occurredAt": "2026-11-02T09:15:00Z",
+   "data": {"taxiId": "taxi_99"}},
+
+  {"eventId": "evt-008", "type": "TaxiConfirme", "emitter": "transport-service", "receiver": "transport-service",
+   "reservationId": "res_9999", "version": 2, "occurredAt": "2026-11-02T09:30:00Z",
+   "data": {"taxiId": "taxi_01"}},
+
+  {"eventId": "evt-009", "type": "ReservationEffectuee", "reservationId": "res_1003"}
+]
