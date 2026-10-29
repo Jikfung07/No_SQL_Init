@@ -1,0 +1,15 @@
+PLAN DES TACHES DU PROJET NOSQL
+
+Le projet est realise dans son ensemble, sans repartition 70/30.
+
+1. Cadrer l'application de location et ses motifs de lecture/ecriture.
+2. Definir les agregats Listing et Reservation dans le Service Locations.
+3. Persister les agregats source et les evenements en attente dans MongoDB.
+4. Publier les evenements ListingPublished, ListingUpdated et ListingDeleted
+   dans Redis Streams avec une strategie idempotente.
+5. Construire le Service Recherche, sa projection Redis et son agregat
+   SearchQueryStats.
+6. Exposer les API, une interface de demonstration et les donnees initiales.
+7. Ajouter le lancement Docker Compose, les controles de sante et les tests.
+8. Documenter les structures, le choix des bases, la coherence a terme et les
+   limites dans le README et le mini-rapport PDF.

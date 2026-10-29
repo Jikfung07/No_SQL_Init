@@ -1,0 +1,20 @@
+{
+  "reservationId": "res_2026_0042",
+  "listingId": "lst_paris_001",
+  "hostId": "usr_1001",
+  "guestId": "usr_2048",
+  "checkIn": "2026-10-20",
+  "checkOut": "2026-10-23",
+  "guestCount": 2,
+  "priceSnapshot": {
+    "nightlyPrice": 95,
+    "nights": 3,
+    "cleaningFee": 20,
+    "total": 305,
+    "currency": "EUR"
+  },
+  "status": "COMPLETED",
+  "createdAt": "2026-10-01T14:30:00Z",
+  "updatedAt": "2026-10-23T10:00:00Z",
+  "version": 3
+}

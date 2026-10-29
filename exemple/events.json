@@ -1,0 +1,101 @@
+[
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391001",
+    "eventType": "ListingPublished",
+    "eventVersion": 1,
+    "occurredAt": "2026-09-01T10:25:00Z",
+    "aggregateType": "Listing",
+    "aggregateId": "lst_paris_001",
+    "aggregateVersion": 1,
+    "correlationId": "req_publish_001",
+    "payload": {
+      "hostId": "usr_1001",
+      "city": "Paris",
+      "nightlyPrice": 95,
+      "currency": "EUR"
+    }
+  },
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391002",
+    "eventType": "ReservationRequested",
+    "eventVersion": 1,
+    "occurredAt": "2026-10-01T14:30:00Z",
+    "aggregateType": "Reservation",
+    "aggregateId": "res_2026_0042",
+    "aggregateVersion": 1,
+    "correlationId": "req_reserve_0042",
+    "payload": {
+      "listingId": "lst_paris_001",
+      "hostId": "usr_1001",
+      "guestId": "usr_2048",
+      "checkIn": "2026-10-20",
+      "checkOut": "2026-10-23",
+      "total": 305,
+      "currency": "EUR"
+    }
+  },
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391003",
+    "eventType": "ReservationConfirmed",
+    "eventVersion": 1,
+    "occurredAt": "2026-10-01T16:00:00Z",
+    "aggregateType": "Reservation",
+    "aggregateId": "res_2026_0042",
+    "aggregateVersion": 2,
+    "correlationId": "req_reserve_0042",
+    "payload": {
+      "listingId": "lst_paris_001",
+      "hostId": "usr_1001",
+      "guestId": "usr_2048",
+      "checkIn": "2026-10-20",
+      "checkOut": "2026-10-23",
+      "total": 305,
+      "currency": "EUR"
+    }
+  },
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391004",
+    "eventType": "MessageSent",
+    "eventVersion": 1,
+    "occurredAt": "2026-10-02T09:00:00Z",
+    "aggregateType": "Message",
+    "aggregateId": "msg_0001",
+    "aggregateVersion": 1,
+    "correlationId": "req_message_0001",
+    "payload": {
+      "conversationId": "cnv_res_2026_0042",
+      "senderId": "usr_2048"
+    }
+  },
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391005",
+    "eventType": "StayCompleted",
+    "eventVersion": 1,
+    "occurredAt": "2026-10-23T10:00:00Z",
+    "aggregateType": "Reservation",
+    "aggregateId": "res_2026_0042",
+    "aggregateVersion": 3,
+    "correlationId": null,
+    "payload": {
+      "listingId": "lst_paris_001",
+      "hostId": "usr_1001",
+      "guestId": "usr_2048"
+    }
+  },
+  {
+    "eventId": "a3c68e62-bf17-4eb4-b858-13e38d391006",
+    "eventType": "ReviewSubmitted",
+    "eventVersion": 1,
+    "occurredAt": "2026-10-24T11:00:00Z",
+    "aggregateType": "Review",
+    "aggregateId": "rev_res_2026_0042",
+    "aggregateVersion": 1,
+    "correlationId": "req_review_0042",
+    "payload": {
+      "reservationId": "res_2026_0042",
+      "listingId": "lst_paris_001",
+      "authorId": "usr_2048",
+      "rating": 5
+    }
+  }
+]

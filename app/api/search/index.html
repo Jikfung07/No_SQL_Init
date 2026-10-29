@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Escales - locations NoSQL</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #17211d; background: #f5f7f5; }
+    body { margin: 0; }
+    header { background: #183c32; color: white; padding: 2rem max(1.25rem, calc((100% - 1100px) / 2)); }
+    header h1 { margin: 0 0 .4rem; }
+    main { max-width: 1100px; margin: 1.5rem auto; padding: 0 1.25rem 3rem; }
+    .panel { background: white; border: 1px solid #dce5df; border-radius: 12px; padding: 1.1rem; margin-bottom: 1.25rem; }
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: .75rem; align-items: end; }
+    label { display: grid; gap: .3rem; font-size: .9rem; }
+    input, textarea, button { font: inherit; padding: .65rem; border: 1px solid #b9c9bf; border-radius: 7px; }
+    textarea { min-height: 2.7rem; }
+    button { background: #28775b; border: 0; color: white; font-weight: 650; cursor: pointer; }
+    button:hover { background: #1d5e46; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+    article { background: white; border: 1px solid #dce5df; border-radius: 12px; padding: 1rem; }
+    article h3 { margin-top: 0; }
+    .price { color: #1d6b4c; font-weight: 700; }
+    .muted, #status { color: #5a6960; }
+    .pill { display: inline-block; border-radius: 99px; background: #e7f2eb; padding: .2rem .55rem; font-size: .8rem; }
+    .error { color: #a42626 !important; }
+    .secondary { background: #e7f2eb; color: #1d5e46; margin-top: .5rem; }
+    @media (max-width: 600px) { header { padding: 1.5rem 1rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Escales</h1>
+    <div>Un mini-site de location propulsé par deux services et deux bases NoSQL.</div>
+  </header>
+  <main>
+    <section class="panel">
+      <h2>Rechercher une annonce</h2>
+      <form id="search-form">
+        <label>Ville <input name="city" placeholder="Paris"></label>
+        <label>Voyageurs <input name="guests" type="number" min="1" value="1"></label>
+        <label>Prix minimum / nuit <input name="minPrice" type="number" min="0"></label>
+        <label>Prix maximum / nuit <input name="maxPrice" type="number" min="0"></label>
+        <label>Mots-clés <input name="q" placeholder="canal, calme..."></label>
+        <button>Rechercher dans Redis</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2>Publier une annonce (démo)</h2>
+      <form id="listing-form">
+        <label>Titre <input name="title" minlength="4" required value="Appartement près du parc"></label>
+        <label>Ville <input name="city" required value="Lyon"></label>
+        <label>Prix / nuit (€) <input name="nightlyPrice" type="number" min="1" required value="82"></label>
+        <label>Voyageurs <input name="guests" type="number" min="1" value="3"></label>
+        <label>Description <textarea name="description" minlength="10" required>Appartement lumineux et confortable, proche des transports.</textarea></label>
+        <button>Enregistrer dans MongoDB</button>
+      </form>
+      <p class="muted">L’annonce est enregistrée dans MongoDB, publiée dans Redis Streams puis projetée pour la recherche Redis.</p>
+    </section>
+    <p id="status" role="status">Chargement des annonces...</p>
+    <section id="results" class="cards" aria-live="polite"></section>
+    <section class="panel">
+      <h2>Demander une réservation</h2>
+      <form id="reservation-form">
+        <label>Identifiant de l'annonce <input name="listingId" id="reservation-listing-id" required></label>
+        <label>Arrivée <input name="checkIn" type="date" required></label>
+        <label>Départ <input name="checkOut" type="date" required></label>
+        <label>Voyageurs <input name="guestCount" type="number" min="1" value="1" required></label>
+        <button>Envoyer la demande</button>
+      </form>
+      <p id="reservation-status" class="muted" role="status"></p>
+    </section>
+    <section class="panel">
+      <h2>Observabilité du projet</h2>
+      <p id="stats" class="muted">Chargement des statistiques...</p>
+      <p class="muted">Les API sont documentées sur <a id="docs-link" href="#">/docs</a>.</p>
+    </section>
+  </main>
+  <script>
+    const searchBase = window.location.origin;
+    const listingsBase = new URLSearchParams(location.search).get("listingsApi") || "http://localhost:8000";
+    const statusNode = document.querySelector("#status");
+    const resultsNode = document.querySelector("#results");
+
+    function showError(error) {
+      statusNode.textContent = `Erreur: ${error.message}`;
+      statusNode.className = "error";
+    }
+
+    function renderListings(data) {
+      const entries = data.results || data;
+      resultsNode.replaceChildren();
+      statusNode.textContent = `${entries.length} annonce(s) — données lues depuis ${data.source || "MongoDB"}.`;
+      statusNode.className = "";
+      for (const listing of entries) {
+        const card = document.createElement("article");
+        const title = document.createElement("h3");
+        title.textContent = listing.title;
+        const location = document.createElement("p");
+        location.textContent = `${listing.city} · jusqu'à ${listing.guests} voyageur(s)`;
+        const description = document.createElement("p");
+        description.textContent = listing.description;
+        const price = document.createElement("p");
+        price.className = "price";
+        price.textContent = `${listing.nightlyPrice} ${listing.currency || "EUR"} / nuit`;
+        const badge = document.createElement("span");
+        badge.className = "pill";
+        badge.textContent = `v${listing.version} · ${listing.status}`;
+        const listingId = document.createElement("p");
+        listingId.className = "muted";
+        listingId.textContent = listing.listingId;
+        const reserve = document.createElement("button");
+        reserve.className = "secondary";
+        reserve.textContent = "Demander une réservation";
+        reserve.addEventListener("click", () => {
+          document.querySelector("#reservation-listing-id").value = listing.listingId;
+          document.querySelector("#reservation-form").scrollIntoView({ behavior: "smooth" });
+        });
+        card.append(title, location, description, price, badge, listingId, reserve);
+        resultsNode.append(card);
+      }
+    }
+
+    async function searchListings(parameters = new URLSearchParams()) {
+      const response = await fetch(`${searchBase}/search?${parameters}`);
+      if (!response.ok) throw new Error(`Recherche Redis: HTTP ${response.status}`);
+      const data = await response.json();
+      renderListings(data);
+      await loadStats();
+    }
+
+    async function loadStats() {
+      const response = await fetch(`${searchBase}/stats`);
+      if (!response.ok) throw new Error(`Statistiques: HTTP ${response.status}`);
+      const stats = await response.json();
+      document.querySelector("#stats").textContent =
+        `Agrégat ${stats.aggregate} dans ${stats.database} : ${stats.totalQueries} recherche(s).`;
+    }
+
+    async function waitForProjection(listingId) {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        const response = await fetch(`${searchBase}/projection`);
+        if (!response.ok) throw new Error(`Projection Redis: HTTP ${response.status}`);
+        const projection = await response.json();
+        if (projection.listings.some(listing => listing.listingId === listingId)) return true;
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      return false;
+    }
+
+    async function loadInitialListings() {
+      for (let attempt = 0; attempt < 20; attempt++) {
+        const response = await fetch(`${searchBase}/projection`);
+        if (!response.ok) throw new Error(`Projection Redis: HTTP ${response.status}`);
+        const projection = await response.json();
+        if (projection.count > 0) break;
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      await searchListings();
+    }
+
+    document.querySelector("#docs-link").href = `${searchBase}/docs`;
+    document.querySelector("#search-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      try {
+        const parameters = new URLSearchParams(new FormData(event.currentTarget));
+        for (const [key, value] of [...parameters]) if (!value) parameters.delete(key);
+        await searchListings(parameters);
+      } catch (error) { showError(error); }
+    });
+
+    document.querySelector("#listing-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      const body = Object.fromEntries(form.entries());
+      body.nightlyPrice = Number(body.nightlyPrice);
+      body.guests = Number(body.guests);
+      try {
+        const response = await fetch(`${listingsBase}/listings`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        if (!response.ok) throw new Error(`Création MongoDB: HTTP ${response.status}`);
+        const listing = await response.json();
+        statusNode.textContent = `Annonce ${listing.listingId} enregistrée. Attente de sa projection dans Redis...`;
+        const projected = await waitForProjection(listing.listingId);
+        if (!projected) {
+          throw new Error("Annonce enregistrée dans MongoDB mais projection Redis encore en attente. Réessayez la recherche dans quelques secondes.");
+        }
+        await searchListings(new URLSearchParams({ city: listing.city }));
+      } catch (error) { showError(error); }
+    });
+
+    document.querySelector("#reservation-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const reservationStatus = document.querySelector("#reservation-status");
+      const payload = Object.fromEntries(new FormData(event.currentTarget).entries());
+      payload.guestCount = Number(payload.guestCount);
+      try {
+        const response = await fetch(`${listingsBase}/reservations`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!response.ok) throw new Error(`Réservation: HTTP ${response.status}`);
+        const reservation = await response.json();
+        reservationStatus.textContent =
+          `Demande ${reservation.reservationId} créée (${reservation.status}), total ${reservation.total} ${reservation.currency}.`;
+        reservationStatus.className = "muted";
+      } catch (error) {
+        reservationStatus.textContent = `Erreur: ${error.message}`;
+        reservationStatus.className = "error";
+      }
+    });
+
+    loadInitialListings().catch(showError);
+  </script>
+</body>
+</html>

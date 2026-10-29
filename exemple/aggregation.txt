@@ -1,0 +1,63 @@
+PROPOSITION DE MODELISATION NoSQL — SITE DE LOCATION TYPE AIRBNB
+
+Hypothese : base de donnees orientee documents (ex. MongoDB). Cette proposition
+vise un MVP scolaire : publier des annonces, rechercher un logement, reserver,
+echanger des messages et laisser un avis.
+
+AGREGATS (frontieres de transaction)
+
+1. Annonce (racine : listingId)
+   Contient les informations qui evoluent avec l'annonce : titre, description,
+   adresse, capacite, equipements, photos, prix et statut. Le proprietaire est
+   reference par hostId. Ne pas y integrer les reservations : elles ont leur
+   propre cycle de vie et pourraient rendre le document trop volumineux.
+
+2. Reservation (racine : reservationId)
+   Reference listingId, hostId et guestId. Contient les dates et une copie du
+   prix au moment de la demande (priceSnapshot), afin qu'une modification de
+   l'annonce ne change pas le prix d'une reservation existante. Etats :
+   PENDING_HOST -> CONFIRMED ou REJECTED ; PENDING_HOST/CONFIRMED ->
+   CANCELLED selon les regles du projet ; CONFIRMED -> COMPLETED apres le sejour.
+
+3. Utilisateur (racine : userId)
+   Contient profil, email et role. Le mot de passe n'est jamais renvoye par
+   l'API ; s'il est stocke, il doit etre hache. Les annonces et reservations
+   gardent seulement les identifiants utilisateur.
+
+4. Conversation (racine : conversationId) et Message (document append-only)
+   La conversation garde ses participants et un apercu du dernier message.
+   Les messages sont dans une collection separee, car leur nombre peut croitre
+   sans limite. Chaque message reference conversationId et senderId.
+
+5. Avis (racine : reviewId)
+   Un avis reference une reservation terminee, son auteur et l'annonce. Pour
+   le MVP, une seule review par reservation ; verifier cette contrainte a
+   l'ecriture avec un index unique sur reservationId.
+
+EVENEMENTS METIER
+
+Les evenements sont des faits immuables emis apres une transition valide :
+ListingPublished, ReservationRequested, ReservationConfirmed,
+ReservationRejected, ReservationCancelled, StayCompleted, MessageSent,
+ReviewSubmitted. Chaque evenement possede eventId, eventType, occurredAt,
+aggregateId, aggregateVersion et payload. Utiliser eventId pour dedupliquer
+les traitements. Un evenement n'est pas une commande : ReservationRequested
+exprime un fait apres acceptation de la demande, pas une demande a executer.
+
+INVARIANTS A PRESERVER
+
+- checkOut est strictement apres checkIn ; le nombre de voyageurs est positif.
+- Seul le proprietaire peut modifier/publier son annonce.
+- Seul l'hote peut confirmer ou refuser une demande en attente.
+- Les periodes CONFIRMED ne doivent pas se chevaucher pour une meme annonce.
+  Cette verification doit etre atomique cote serveur (transaction/verrou ou
+  reservation des nuits avec contrainte unique) : une simple recherche avant
+  insertion ne suffit pas en cas de demandes simultanees.
+- Un avis n'est possible qu'apres un sejour termine.
+- Les lectures de recherche peuvent utiliser une projection denormalisee et
+  etre eventuellement coherentes ; la validation d'une reservation doit
+  re-verifier la disponibilite sur le modele d'ecriture.
+
+Les schemas JSON, documents d'exemple, evenements et routes HTTP sont dans le
+dossier exemple/. Ils constituent un point de depart a adapter aux choix du
+groupe et aux consignes exactes du professeur.

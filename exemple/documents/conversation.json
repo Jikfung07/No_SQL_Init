@@ -1,0 +1,13 @@
+{
+  "conversationId": "cnv_res_2026_0042",
+  "reservationId": "res_2026_0042",
+  "participantIds": ["usr_1001", "usr_2048"],
+  "lastMessage": {
+    "messageId": "msg_0001",
+    "senderId": "usr_2048",
+    "text": "Bonjour, est-il possible d'arriver vers 18 h ?",
+    "sentAt": "2026-10-02T09:00:00Z"
+  },
+  "createdAt": "2026-10-02T09:00:00Z",
+  "version": 2
+}

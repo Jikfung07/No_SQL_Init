@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/review.schema.json",
+  "title": "Avis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["reviewId", "reservationId", "listingId", "authorId", "rating", "createdAt"],
+  "properties": {
+    "reviewId": { "type": "string", "minLength": 1 },
+    "reservationId": { "type": "string", "minLength": 1 },
+    "listingId": { "type": "string", "minLength": 1 },
+    "authorId": { "type": "string", "minLength": 1 },
+    "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "comment": { "type": ["string", "null"], "maxLength": 2000 },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

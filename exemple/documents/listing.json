@@ -1,0 +1,35 @@
+{
+  "listingId": "lst_paris_001",
+  "hostId": "usr_1001",
+  "title": "Studio lumineux pres du canal",
+  "description": "Studio calme et equipe, a quelques minutes des transports.",
+  "location": {
+    "city": "Paris",
+    "countryCode": "FR",
+    "address": null,
+    "coordinates": {
+      "latitude": 48.8698,
+      "longitude": 2.3647
+    }
+  },
+  "capacity": {
+    "guests": 2,
+    "bedrooms": 1,
+    "beds": 1,
+    "bathrooms": 1
+  },
+  "amenities": ["wifi", "kitchen", "heating"],
+  "nightlyPrice": 95,
+  "currency": "EUR",
+  "photos": [
+    {
+      "url": "https://example.test/images/studio-1.jpg",
+      "position": 0,
+      "caption": "Piece principale"
+    }
+  ],
+  "status": "PUBLISHED",
+  "createdAt": "2026-09-01T10:20:00Z",
+  "updatedAt": null,
+  "version": 1
+}

@@ -1,0 +1,9 @@
+{
+  "userId": "usr_1001",
+  "email": "lea.martin@example.test",
+  "displayName": "Lea Martin",
+  "role": "BOTH",
+  "phone": null,
+  "createdAt": "2026-09-01T10:15:00Z",
+  "version": 1
+}

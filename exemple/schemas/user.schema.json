@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/user.schema.json",
+  "title": "Utilisateur",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["userId", "email", "displayName", "role", "createdAt", "version"],
+  "properties": {
+    "userId": { "type": "string", "minLength": 1 },
+    "email": { "type": "string", "format": "email" },
+    "displayName": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "role": { "type": "string", "enum": ["GUEST", "HOST", "BOTH", "ADMIN"] },
+    "phone": { "type": ["string", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 }
+  }
+}
