@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/reservation.schema.json",
+  "title": "Reservation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reservationId", "listingId", "hostId", "guestId", "checkIn", "checkOut",
+    "guestCount", "priceSnapshot", "status", "createdAt", "version"
+  ],
+  "properties": {
+    "reservationId": { "type": "string", "minLength": 1 },
+    "listingId": { "type": "string", "minLength": 1 },
+    "hostId": { "type": "string", "minLength": 1 },
+    "guestId": { "type": "string", "minLength": 1 },
+    "checkIn": { "type": "string", "format": "date" },
+    "checkOut": { "type": "string", "format": "date" },
+    "guestCount": { "type": "integer", "minimum": 1 },
+    "priceSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nightlyPrice", "nights", "cleaningFee", "total", "currency"],
+      "properties": {
+        "nightlyPrice": { "type": "number", "minimum": 0 },
+        "nights": { "type": "integer", "minimum": 1 },
+        "cleaningFee": { "type": "number", "minimum": 0 },
+        "total": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PENDING_HOST", "CONFIRMED", "REJECTED", "CANCELLED", "COMPLETED"]
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": ["string", "null"], "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 }
+  }
+}

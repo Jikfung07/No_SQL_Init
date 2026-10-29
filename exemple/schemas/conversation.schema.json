@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/conversation.schema.json",
+  "title": "Conversation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["conversationId", "reservationId", "participantIds", "createdAt", "version"],
+  "properties": {
+    "conversationId": { "type": "string", "minLength": 1 },
+    "reservationId": { "type": ["string", "null"] },
+    "participantIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "lastMessage": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["messageId", "senderId", "text", "sentAt"],
+      "properties": {
+        "messageId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string", "maxLength": 200 },
+        "sentAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "version": { "type": "integer", "minimum": 1 }
+  }
+}
